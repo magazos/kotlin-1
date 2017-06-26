@@ -835,6 +835,12 @@ public class QuickFixMultiFileTestGenerated extends AbstractQuickFixMultiFileTes
                 doTestWithExtraFile(fileName);
             }
 
+            @TestMetadata("jkKeepValOnParameterTypeChange.before.Main.java")
+            public void testJkKeepValOnParameterTypeChange() throws Exception {
+                String fileName = KotlinTestUtils.navigationMetadata("idea/testData/quickfix/changeSignature/jk/jkKeepValOnParameterTypeChange.before.Main.java");
+                doTestWithExtraFile(fileName);
+            }
+
             @TestMetadata("jkRemoveFunctionParameter.before.Main.java")
             public void testJkRemoveFunctionParameter() throws Exception {
                 String fileName = KotlinTestUtils.navigationMetadata("idea/testData/quickfix/changeSignature/jk/jkRemoveFunctionParameter.before.Main.java");
