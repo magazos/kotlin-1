@@ -9,7 +9,7 @@ import java.io.File
 class UpToDateIT : BaseGradleIT() {
     @Test
     fun testWithAllMutations() {
-        val project = Project("simpleProject", "4.1")
+        val project = Project("simpleProject", NoSpecificGradleVersion)
         project.setupWorkingDir()
         mutations.forEach { it.initProject(project) }
         project.build("build") { assertSuccessful() }
