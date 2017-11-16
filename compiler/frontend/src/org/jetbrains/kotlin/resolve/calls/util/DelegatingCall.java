@@ -41,6 +41,11 @@ public class DelegatingCall implements Call {
     }
 
     @Override
+    public boolean isSafeCallOrSemanticallyEquivalent() {
+        return delegate.isSafeCallOrSemanticallyEquivalent();
+    }
+
+    @Override
     @Nullable
     public Receiver getExplicitReceiver() {
         return delegate.getExplicitReceiver();
