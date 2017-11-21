@@ -38,6 +38,8 @@ configurations {
 }
 
 dependencies {
+    compile project(':kotlin-stdlib')
+
     proguardDeps project(':kotlin-stdlib')
 
     shadows project(':kotlin-reflect-api')
