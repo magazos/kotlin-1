@@ -1,3 +1,5 @@
+// !WITH_NEW_INFERENCE
+
 object ObjectWithInvoke {
     operator fun invoke() = this
 }
@@ -17,5 +19,5 @@ val test2 = WI(<!TOO_MANY_ARGUMENTS!>null<!>)
 
 val test3 = CWI()
 val test4 = CWI("")
-val test5 = CWI(<!NULL_FOR_NONNULL_TYPE!>null<!>)
-val test5a = ClassWithCompanionObjectWithInvoke(<!NULL_FOR_NONNULL_TYPE!>null<!>)
+val test5 = CWI(<!NI;TOO_MANY_ARGUMENTS, OI;NULL_FOR_NONNULL_TYPE!>null<!>)
+val test5a = ClassWithCompanionObjectWithInvoke(<!NI;TOO_MANY_ARGUMENTS, OI;NULL_FOR_NONNULL_TYPE!>null<!>)
