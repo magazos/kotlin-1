@@ -154,6 +154,8 @@ public abstract class CLICompiler<A extends CommonCompilerArguments> extends CLI
             configuration.put(CLIConfigurationKeys.COMPILER_JAR_LOCATOR, locator);
         }
 
+        configuration.put(CommonConfigurationKeys.USE_NEW_INFERENCE, arguments.getNewInference());
+
         setupLanguageVersionSettings(configuration, arguments);
     }
 
@@ -204,7 +206,7 @@ public abstract class CLICompiler<A extends CommonCompilerArguments> extends CLI
             extraLanguageFeatures.put(LanguageFeature.Coroutines, coroutinesState);
         }
 
-        if (arguments.getNewInference() || configuration.getBoolean(CommonConfigurationKeys.USE_NEW_INFERENCE)) {
+        if (arguments.getNewInference()) {
             extraLanguageFeatures.put(LanguageFeature.NewInference, LanguageFeature.State.ENABLED);
         }
 
