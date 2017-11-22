@@ -116,6 +116,12 @@ public class CallableReferenceInlineTestsGenerated extends AbstractCallableRefer
             doTest(fileName);
         }
 
+        @TestMetadata("emptyLhs.kt")
+        public void testEmptyLhs() throws Exception {
+            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/codegen/boxInline/callableReference/bound/emptyLhs.kt");
+            doTest(fileName);
+        }
+
         @TestMetadata("expression.kt")
         public void testExpression() throws Exception {
             String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/codegen/boxInline/callableReference/bound/expression.kt");
