@@ -16,6 +16,8 @@
 
 package org.jetbrains.kotlin.resolve.lazy
 
+import com.intellij.openapi.components.ServiceManager
+import com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.config.LanguageFeature.DefaultImportOfPackageKotlinComparisons
 import org.jetbrains.kotlin.config.LanguageVersionSettings
@@ -32,26 +34,46 @@ import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 import org.jetbrains.kotlin.storage.StorageManager
 import org.jetbrains.kotlin.storage.getValue
 
+interface RuntimeTypeAliasesProvider {
+    fun findTypeAliases(moduleDescriptor: ModuleDescriptor, packages: Collection<FqName>): Collection<TypeAliasDescriptor>
+
+    object Default : RuntimeTypeAliasesProvider {
+        override fun findTypeAliases(
+                moduleDescriptor: ModuleDescriptor, packages: Collection<FqName>
+        ): Collection<TypeAliasDescriptor> =
+            moduleDescriptor.allDependencyModules
+                    .flatMap { dependencyModule ->
+                        packages.map(dependencyModule::getPackage).flatMap {
+                            it.memberScope.getContributedDescriptors(DescriptorKindFilter.TYPE_ALIASES)
+                                    .filterIsInstance<TypeAliasDescriptor>()
+                        }
+                    }
+    }
+}
+
 class DefaultImportProvider(
         storageManager: StorageManager,
         moduleDescriptor: ModuleDescriptor,
         private val targetPlatform: TargetPlatform,
-        private val languageVersionSettings: LanguageVersionSettings
+        private val languageVersionSettings: LanguageVersionSettings,
+        project: Project
 ) {
+    companion object {
+        val PACKAGES_WITH_ALIASES = listOf(KotlinBuiltIns.BUILT_INS_PACKAGE_FQ_NAME, KotlinBuiltIns.TEXT_PACKAGE_FQ_NAME)
+    }
+
+    private val runtimeTypeAliasesProvider: RuntimeTypeAliasesProvider by storageManager.createLazyValue {
+        ServiceManager.getService(project, RuntimeTypeAliasesProvider::class.java)
+    }
+
     val defaultImports: List<ImportPath> by storageManager.createLazyValue {
         targetPlatform.getDefaultImports(languageVersionSettings.supportsFeature(DefaultImportOfPackageKotlinComparisons))
     }
 
     val excludedImports: List<FqName> by storageManager.createLazyValue {
-        val packagesWithAliases = listOf(KotlinBuiltIns.BUILT_INS_PACKAGE_FQ_NAME, KotlinBuiltIns.TEXT_PACKAGE_FQ_NAME)
-        val builtinTypeAliases = moduleDescriptor.allDependencyModules
-                .flatMap { dependencyModule ->
-                    packagesWithAliases.map(dependencyModule::getPackage).flatMap {
-                        it.memberScope.getContributedDescriptors(DescriptorKindFilter.TYPE_ALIASES).filterIsInstance<TypeAliasDescriptor>()
-                    }
-                }
-                .filter { it.checkSinceKotlinVersionAccessibility(languageVersionSettings) }
-
+        val builtinTypeAliases =
+                runtimeTypeAliasesProvider.findTypeAliases(moduleDescriptor, PACKAGES_WITH_ALIASES)
+                        .filter { it.checkSinceKotlinVersionAccessibility(languageVersionSettings) }
 
         val nonKotlinDefaultImportedPackages =
                 defaultImports
