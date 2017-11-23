@@ -21,15 +21,9 @@ buildscript {
     }
 }
 
-apply { plugin("com.github.johnrengelman.shadow") }
-apply { plugin("java") }
+plugins { java }
 
-fun call(name: String, vararg args: Any?): Any? {
-    val lambda = property(name)!!
-    return lambda.javaClass.declaredMethods.single { it.name == "call" }.invoke(lambda, *args)
-}
-
-call("configureJavaOnlyJvm6Project", this)
+callGroovy("configureJavaOnlyJvm6Project", this)
 publish()
 
 val core = "$rootDir/core"
@@ -65,7 +59,7 @@ dependencies {
     shadows(project(":custom-dependencies:protobuf-lite", configuration = "default"))
 }
 
-val copyAnnotations by tasks.creating(Sync::class) {
+val copyAnnotations by task<Sync> {
     // copy just two missing annotations
     from("$core/runtime.jvm/src") {
         include("**/Mutable.java")
@@ -130,10 +124,10 @@ class KotlinModuleShadowTransformer(private val logger: Logger) : Transformer {
     }
 }
 
-val reflectShadowJar by tasks.creating(ShadowJar::class) {
+val reflectShadowJar by task<ShadowJar> {
     classifier = "shadow"
     version = null
-    call("manifestAttributes", manifest, project, "Main")
+    callGroovy("manifestAttributes", manifest, project, "Main")
 
     from(the<JavaPluginConvention>().sourceSets.getByName("main").output)
     from(project(":core:descriptors.jvm").the<JavaPluginConvention>().sourceSets.getByName("main").resources) {
@@ -166,7 +160,7 @@ val mainArchiveName = "${property("archivesBaseName")}-$version.jar"
 val outputJarPath = "$libsDir/$mainArchiveName"
 val rtJar = listOf("jre/lib/rt.jar", "../Classes/classes.jar").map { File("${property("JDK_16")}/$it") }.first(File::isFile)
 
-val proguard by tasks.creating(ProGuardTask::class) {
+val proguard by task<ProGuardTask> {
     dependsOn(stripMetadata)
     inputs.files(stripMetadata.outputs.files)
     outputs.file(outputJarPath)
@@ -180,44 +174,39 @@ val proguard by tasks.creating(ProGuardTask::class) {
     configuration("$core/reflection.jvm/reflection.pro")
 }
 
-val relocateCoreSources by tasks.creating(Copy::class) {
-    val commonPackage = "org/jetbrains/kotlin"
-
+val relocateCoreSources by task<Copy> {
     doFirst {
         delete(relocatedCoreSrc)
     }
 
-    from("$core/descriptors/src/$commonPackage")
-    from("$core/descriptors.jvm/src/$commonPackage")
-    from("$core/descriptors.runtime/src/$commonPackage")
-    from("$core/deserialization/src/$commonPackage")
-    from("$core/util.runtime/src/$commonPackage")
+    from("$core/descriptors/src")
+    from("$core/descriptors.jvm/src")
+    from("$core/descriptors.runtime/src")
+    from("$core/deserialization/src")
+    from("$core/util.runtime/src")
 
-    into("$relocatedCoreSrc/kotlin/reflect/jvm/internal/impl")
+    into(relocatedCoreSrc)
+    includeEmptyDirs = false
 
-    doLast {
-        ant.withGroovyBuilder {
-            "replaceregexp"(
-                    "match" to "org\\.jetbrains\\.kotlin",
-                    "replace" to "kotlin.reflect.jvm.internal.impl",
-                    "flags" to "g"
-            ) {
-                "fileset"("dir" to relocatedCoreSrc)
-            }
-        }
+    eachFile {
+        path = path.replace("org/jetbrains/kotlin", "kotlin/reflect/jvm/internal/impl")
+    }
+
+    filter { line ->
+        line.replace("org.jetbrains.kotlin", "kotlin.reflect.jvm.internal.impl")
     }
 }
 
 tasks.getByName("jar").enabled = false
 
-val relocatedSourcesJar by tasks.creating(Jar::class) {
+val relocatedSourcesJar by task<Jar> {
     dependsOn(relocateCoreSources)
     classifier = "sources"
     from(relocatedCoreSrc)
     from("$core/reflection.jvm/src")
 }
 
-val dexMethodCount by tasks.creating(DexMethodCount::class) {
+val dexMethodCount by task<DexMethodCount> {
     dependsOn(proguard)
     jarFile = File(outputJarPath)
     ownPackages = listOf("kotlin.reflect")
