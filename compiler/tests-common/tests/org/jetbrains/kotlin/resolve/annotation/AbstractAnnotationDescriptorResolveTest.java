@@ -69,7 +69,7 @@ public abstract class AbstractAnnotationDescriptorResolveTest extends KotlinTest
 
     protected AnalysisResult analysisResult;
 
-    private BindingContext getContext() {
+    protected BindingContext getContext() {
         return analysisResult.getBindingContext();
     }
 
