@@ -70,7 +70,7 @@ class NewOverloadingConflictResolver(
             return FlatSignature.create(candidate,
                                         originalDescriptor,
                                         numDefaults,
-                                        resolvedCall.atom.argumentsInParenthesis.map { valueArgumentToParameterType[it] } +
+                                        resolvedCall.atom.argumentsInParenthesis.mapNotNull { valueArgumentToParameterType[it] } +
                                         listOfNotNull(resolvedCall.atom.externalArgument?.let { valueArgumentToParameterType[it] })
             )
 
