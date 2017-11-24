@@ -28,6 +28,7 @@ dependencies {
 afterEvaluate {
     dependencies {
         compileOnly(intellijCoreJar())
+        testCompile(intellijCoreJar())
         testCompile(intellij { include("idea.jar", "idea_rt.jar", "openapi.jar") })
     }
 }

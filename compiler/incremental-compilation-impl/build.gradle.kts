@@ -27,6 +27,8 @@ afterEvaluate {
     dependencies {
         compileOnly(intellijCoreJar())
         compileOnly(intellij { include("annotations.jar") })
+        testCompile(intellijCoreJar())
+        testCompile(intellij { include("annotations.jar") })
     }
 }
 

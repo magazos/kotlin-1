@@ -22,6 +22,7 @@ afterEvaluate {
     dependencies {
         compileOnly(intellijCoreJar())
         compileOnly(intellij { include("asm-all.jar") })
+        testCompile(intellijCoreJar())
         testCompile(intellij { include("idea.jar", "idea_rt.jar", "openapi.jar") })
     }
 }

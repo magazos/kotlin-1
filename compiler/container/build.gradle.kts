@@ -20,6 +20,7 @@ dependencies {
 afterEvaluate {
     dependencies {
         compileOnly(intellijCoreJar())
+        testCompile(intellijCoreJar())
         testRuntime(intellij { include("trove4j.jar") })
     }
 }
