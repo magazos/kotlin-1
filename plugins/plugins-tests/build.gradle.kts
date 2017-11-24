@@ -39,6 +39,7 @@ dependencies {
 afterEvaluate {
     dependencies {
         testCompileOnly(intellij { include("jps-builders.jar") })
+        testCompile(intellijPlugin("android") { include("**/android-jps-plugin.jar") })
         testCompile(intellijExtra("jps-build-test"))
         testRuntime(intellij())
         testRuntime(intellijPlugin("junit") { include("idea-junit.jar", "resources_en.jar") })

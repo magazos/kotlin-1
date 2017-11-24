@@ -3,7 +3,9 @@ description = "Annotation Processor for Kotlin"
 
 apply { plugin("kotlin") }
 
-configureIntellijPlugin()
+configureIntellijPlugin {
+    setExtraDependencies("intellij-core")
+}
 
 dependencies {
     compile(project(":compiler:util"))
@@ -18,6 +20,8 @@ dependencies {
 
 afterEvaluate {
     dependencies {
+        compileOnly(intellijCoreJar())
+        compileOnly(intellij { include("asm-all.jar") })
         testCompile(intellij { include("idea.jar", "idea_rt.jar", "openapi.jar") })
     }
 }
