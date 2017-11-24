@@ -43,6 +43,7 @@ interface SyntheticScopes {
         for (provider in scopeProviders) {
             result = provider.provideSyntheticScope(result, metadata)
         }
+        if (scope === result) return SyntheticResolutionScope.Empty
         return result
     }
 

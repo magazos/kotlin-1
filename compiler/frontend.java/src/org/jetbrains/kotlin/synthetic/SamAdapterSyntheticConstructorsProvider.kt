@@ -56,7 +56,13 @@ private class SamAdapterSyntheticConstructorsScope(
     }
 
     override fun getContributedDescriptors(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean): Collection<DeclarationDescriptor> {
-        return originalScope().getContributedDescriptors(DescriptorKindFilter.CLASSIFIERS)
+        val contributedDescriptors = originalScope().getContributedDescriptors(DescriptorKindFilter.CLASSIFIERS)
+        val constructor = (contributedDescriptors.singleOrNull() as? ConstructorDescriptor) ?: return processClassifierDescriptors(contributedDescriptors, kindFilter, nameFilter)
+        return listOfNotNull(getSyntheticConstructor(constructor)) + super.getContributedDescriptors(kindFilter, nameFilter)
+    }
+
+    private fun processClassifierDescriptors(contributedDescriptors: Collection<DeclarationDescriptor>, kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean): List<DeclarationDescriptor> {
+        return contributedDescriptors
                        .filterIsInstance<ClassifierDescriptor>()
                        .flatMap { getAllSamConstructors(it) } + super.getContributedDescriptors(kindFilter, nameFilter)
     }
