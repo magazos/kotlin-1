@@ -20,7 +20,7 @@ dependencies {
 afterEvaluate {
     dependencies {
         compileOnly(intellijCoreJar())
-        compileOnly(intellij { include("util.jar", "guava-*.jar", "openapi.jar", "idea.jar") })
+        compileOnly(intellij { include("util.jar", "guava-*.jar", "openapi.jar", "idea.jar", "asm-all.jar") })
         compileOnly(intellijPlugin("android") {
             include("android.jar", "android-common.jar", "sdklib.jar", "sdk-common.jar", "sdk-tools.jar",
                     "repository.jar", "lombok-ast-*.jar", "layoutlib-api.jar", "kxml2-*.jar")

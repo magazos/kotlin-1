@@ -32,7 +32,9 @@ dependencies {
 
 afterEvaluate {
     dependencies {
-        testCompile(intellij { include("openapi.jar", "idea.jar", "idea_rt.jar", "util.jar") })
+        testCompileOnly(intellijCoreJar())
+        testCompileOnly(intellij { include("openapi.jar", "idea.jar", "idea_rt.jar", "util.jar") })
+        testRuntime(intellij())
     }
 }
 
