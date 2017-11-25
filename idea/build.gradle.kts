@@ -73,7 +73,7 @@ afterEvaluate {
     dependencies {
         compileOnly(intellijCoreJar())
         compileOnly(intellij {
-            include("annotations.jar", "openapi.jar", "idea.jar", "velocity.jar", "boot.jar", "gson-*.jar", "log4j.jar",
+            include("annotations.jar", "openapi.jar", "idea.jar", "velocity.jar", "boot.jar", "gson-*.jar", "log4j.jar", "asm-all.jar",
                     "swingx-core-*.jar", "jsr305.jar", "forms_rt.jar", "util.jar", "jdom.jar", "trove4j.jar", "guava-*.jar")
         })
         compileOnly(intellijPlugins("IntelliLang", "copyright", "properties", "java-i18n"))
