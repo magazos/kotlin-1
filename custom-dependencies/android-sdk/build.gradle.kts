@@ -21,14 +21,15 @@ val buildTools by configurations.creating
 val libsDestDir = File(buildDir, "libs")
 val sdkDestDir = File(buildDir, "androidSdk")
 
-data class LocMap(val name: String, val ver: String, val dest: String, val suffix: String, val additionalConfig: Configuration? = null)
+data class LocMap(val name: String, val ver: String, val dest: String, val suffix: String,
+                  val additionalConfig: Configuration? = null, val dirLevelsToSkit: Int = 0)
 
 val sdkLocMaps = listOf(
-        LocMap("platform", "26_r02", "platforms/android-26", "", androidPlatform),
+        LocMap("platform", "26_r02", "platforms/android-26", "", androidPlatform, 1),
         LocMap("android_m2repository", "r44", "extras/android", ""),
         LocMap("platform-tools", "r25.0.3", "", "linux"),
         LocMap("tools", "r24.3.4", "", "linux"),
-        LocMap("build-tools", "r23.0.1", "build-tools", "linux", buildTools))
+        LocMap("build-tools", "r23.0.1", "build-tools/23.0.1", "linux", buildTools, 1))
 
 
 val prepareSdk by task<DefaultTask> {
@@ -50,6 +51,13 @@ sdkLocMaps.forEach {
             from(zipTree(cfg.singleFile))
         }
         into(file("$sdkDestDir/${it.dest}"))
+    }
+    if (it.dirLevelsToSkit > 0) {
+        t.apply {
+            eachFile {
+                path = path.split("/").drop(it.dirLevelsToSkit).joinToString("/")
+            }
+        }
     }
     prepareSdk.dependsOn(t)
 
