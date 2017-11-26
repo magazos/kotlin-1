@@ -79,7 +79,8 @@ afterEvaluate {
         compileOnly(intellijPlugins("IntelliLang", "copyright", "properties", "java-i18n"))
         testCompileOnly(intellijCoreJar())
         testCompileOnly(intellijPlugins("IntelliLang", "copyright", "properties", "java-i18n"))
-        testCompileOnly(intellij { include("groovy-all-*.jar", "velocity.jar", "gson-*.jar", "jsr305.jar", "idea_rt.jar", "util.jar") })
+        testCompileOnly(intellij { include("groovy-all-*.jar", "velocity.jar", "gson-*.jar", "jsr305.jar", "idea_rt.jar", "util.jar",
+                                           "log4j.jar") })
         testCompileOnly(intellijPlugin("gradle") { include("gradle-base-services-*.jar", "gradle-tooling-extension-impl.jar", "gradle-wrapper-*.jar") })
         testCompileOnly(intellijPlugin("Groovy") { include("Groovy.jar") })
         testCompileOnly(intellijPlugin("maven") { include("maven.jar", "maven-server-api.jar") })
