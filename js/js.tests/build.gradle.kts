@@ -1,7 +1,9 @@
 
 apply { plugin("kotlin") }
 
-configureIntellijPlugin()
+configureIntellijPlugin {
+    setExtraDependencies("intellij-core")
+}
 
 val antLauncherJar by configurations.creating
 
